@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "tw-animate-css";
+
+:root {
+  --color-ink: #1c1730;
+  --color-paper: #faf9fc;
+  --color-surface: #ffffff;
+  --color-primary: #4c2a86;
+  --color-primary-dark: #341d5c;
+  --color-accent: #d9a441;
+  --color-accent-soft: #f4e6c8;
+  --color-border: #e6e1ee;
+  --color-muted: #7a7290;
+  --color-danger: #c1433c;
+  --color-success: #2f7a51;
+}
+
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: var(--color-ink);
+  --color-paper: var(--color-paper);
+  --color-surface: var(--color-surface);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-accent: var(--color-accent);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-border-c: var(--color-border);
+  --color-muted: var(--color-muted);
+  --color-danger: var(--color-danger);
+  --color-success: var(--color-success);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-primary-dark);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+.container-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

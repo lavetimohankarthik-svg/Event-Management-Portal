@@ -1,25 +1,38 @@
-const nodemailer = require("nodemailer");
-
-// Create transporter using Gmail SMTP service
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
-
-// Helper function to send email via SMTP transporter
+// Email service using Brevo (Sendinblue) HTTP API
 const sendEmail = async ({ to, subject, html }) => {
     try {
-        await transporter.sendMail({
-            from: `Recstacy Notifications <${process.env.SMTP_USER}>`,
-            to,
-            subject,
-            html
+        const response = await fetch("https://api.sendinblue.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+                "accept": "application/json",
+                "api-key": process.env.BREVO_API_KEY,
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                sender: {
+                    name: process.env.BREVO_SENDER_NAME || "Recstacy Notifications",
+                    email: process.env.BREVO_SENDER_EMAIL || "lavetimohankarthik@gmail.com"
+                },
+                to: [
+                    {
+                        email: to
+                    }
+                ],
+                subject,
+                htmlContent: html
+            })
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Brevo API Error: ${response.status} - ${JSON.stringify(errorData)}`);
+        }
+
+        const result = await response.json();
+        console.log("Email sent successfully via Brevo. Message ID:", result.messageId);
+        return result;
     } catch (error) {
-        console.error("Nodemailer sendMail error:", error);
+        console.error("Brevo sendEmail error:", error);
         throw error;
     }
 };

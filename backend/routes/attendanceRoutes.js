@@ -33,4 +33,11 @@ router.put(
     attendanceController.manualCheckIn
 );
 
+router.get(
+    "/logs/:eventId",
+    protect,
+    authorize("organizer"),
+    attendanceController.getAuditLogs
+);
+
 module.exports = router;

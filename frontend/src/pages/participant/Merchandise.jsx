@@ -23,7 +23,20 @@ const Merchandise = () => {
     setLoading(true);
     api
       .get("/merchandise")
-      .then(({ data }) => setItems(data.merchandise || []))
+      .then(({ data }) => {
+        const sortedItems = (data.merchandise || []).sort((a, b) => {
+          const now = new Date();
+          const aPassed = a.purchaseDeadline ? new Date(a.purchaseDeadline) < now : false;
+          const bPassed = b.purchaseDeadline ? new Date(b.purchaseDeadline) < now : false;
+
+          // 1. Deadline passed items at the bottom
+          if (aPassed && !bPassed) return 1;
+          if (!aPassed && bPassed) return -1;
+          
+          return 0;
+        });
+        setItems(sortedItems);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -69,76 +82,85 @@ const Merchandise = () => {
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item._id}>
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-40 w-full rounded-t-2xl object-cover cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setLightboxOpen(true);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setSelectedItem(item);
-                      setLightboxOpen(true);
-                    }
-                  }}
-                />
-              )}
-              <CardBody className="space-y-2">
-                <p className="font-semibold">{item.name}</p>
-                <p className="line-clamp-2 text-xs text-[var(--color-muted)]">
-                  {item.description}
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold text-[var(--color-primary-dark)]">
-                    {currency(item.price)}
-                  </span>
-                  <span className="text-xs text-[var(--color-muted)]">
-                    {item.stock} in stock
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    min={1}
-                    max={item.purchaseLimitPerParticipant}
-                    className="w-20"
-                    value={quantities[item._id] || 1}
-                    onChange={(e) =>
-                      setQuantities({ ...quantities, [item._id]: e.target.value })
-                    }
-                  />
-                  <Button
-                    className="flex-1"
-                    disabled={item.stock === 0}
-                    loading={busyId === item._id}
-                    onClick={() => buy(item)}
-                  >
-                    {item.stock === 0 ? "Out of Stock" : "Buy"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
+          {items.map((item) => {
+            const isDeadlinePassed = item.purchaseDeadline ? new Date(item.purchaseDeadline) < new Date() : false;
+            return (
+              <Card key={item._id}>
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-40 w-full rounded-t-2xl object-cover cursor-pointer"
                     onClick={() => {
                       setSelectedItem(item);
-                      setModalOpen(true);
+                      setLightboxOpen(true);
                     }}
-                  >
-                    Details
-                  </Button>
-                </div>
-                <p className="text-[10px] text-[var(--color-muted)]">
-                  Limit {item.purchaseLimitPerParticipant} per participant
-                </p>
-              </CardBody>
-            </Card>
-          ))}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSelectedItem(item);
+                        setLightboxOpen(true);
+                      }
+                    }}
+                  />
+                )}
+                <CardBody className="space-y-2">
+                  <p className="font-semibold">{item.name}</p>
+                  <p className="line-clamp-2 text-xs text-[var(--color-muted)]">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-[var(--color-primary-dark)]">
+                      {currency(item.price)}
+                    </span>
+                    <span className="text-xs text-[var(--color-muted)]">
+                      {item.stock} in stock
+                    </span>
+                  </div>
+                  {item.purchaseDeadline && (
+                    <p className={`text-[10px] font-medium ${isDeadlinePassed ? "text-red-500 font-medium animate-pulse" : "text-[var(--color-muted)]"}`}>
+                      Deadline: {new Date(item.purchaseDeadline).toLocaleDateString()} {isDeadlinePassed && "(Passed)"}
+                    </p>
+                  )}
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      min={1}
+                      max={item.purchaseLimitPerParticipant}
+                      className="w-20"
+                      value={quantities[item._id] || 1}
+                      onChange={(e) =>
+                        setQuantities({ ...quantities, [item._id]: e.target.value })
+                      }
+                      disabled={isDeadlinePassed}
+                    />
+                    <Button
+                      className="flex-1"
+                      disabled={item.stock === 0 || isDeadlinePassed}
+                      loading={busyId === item._id}
+                      onClick={() => buy(item)}
+                    >
+                      {item.stock === 0 ? "Out of Stock" : isDeadlinePassed ? "Deadline Passed" : "Buy"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setModalOpen(true);
+                      }}
+                    >
+                      Details
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-[var(--color-muted)]">
+                    Limit {item.purchaseLimitPerParticipant} per participant
+                  </p>
+                </CardBody>
+              </Card>
+            );
+          })}
         </div>
       )}
       <MerchandiseModal

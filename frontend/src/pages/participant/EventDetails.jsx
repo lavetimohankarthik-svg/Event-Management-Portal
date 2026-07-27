@@ -27,6 +27,7 @@ const EventDetails = () => {
   const [registration, setRegistration] = useState(null);
   const [formValues, setFormValues] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [calendarLinks, setCalendarLinks] = useState(null);
 
   const loadEverything = async () => {
     setLoading(true);
@@ -42,6 +43,17 @@ const EventDetails = () => {
         (r) => r.event?._id === id
       );
       setRegistration(existing || null);
+
+      if (existing) {
+        try {
+          const { data } = await api.get(`/calendar/links/${id}`);
+          setCalendarLinks(data);
+        } catch (err) {
+          console.error("Error loading calendar links", err);
+        }
+      } else {
+        setCalendarLinks(null);
+      }
     } catch (error) {
       toast.error(apiMessage(error, "Could not load this event."));
     } finally {
@@ -53,6 +65,21 @@ const EventDetails = () => {
     loadEverything();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const downloadIcs = async () => {
+    try {
+      const response = await api.get(`/calendar/${id}`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${event?.eventName || "event"}.ics`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      toast.error("Could not download calendar file.");
+    }
+  };
 
   if (loading) return <Loader label="Loading event..." />;
   if (!event) return null;
@@ -165,7 +192,7 @@ const EventDetails = () => {
         <div className="space-y-4">
           {registration ? (
             <Card>
-              <CardBody>
+              <CardBody className="space-y-4">
                 <p className="mb-1 text-sm font-semibold text-green-700">
                   You're registered!
                 </p>
@@ -173,6 +200,38 @@ const EventDetails = () => {
                   Ticket: {registration.ticketId}
                 </p>
                 <img src={registration.qrCode} alt="QR" className="mx-auto h-32 w-32" />
+
+                <div className="border-t border-gray-100 pt-3 space-y-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase">Add to Calendar</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {calendarLinks?.googleCalendar && (
+                      <a 
+                        href={calendarLinks.googleCalendar} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-2 hover:bg-gray-50 transition font-medium"
+                      >
+                        Google Calendar
+                      </a>
+                    )}
+                    {calendarLinks?.outlookCalendar && (
+                      <a 
+                        href={calendarLinks.outlookCalendar} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-2 hover:bg-gray-50 transition font-medium"
+                      >
+                        Outlook
+                      </a>
+                    )}
+                  </div>
+                  <button 
+                    onClick={downloadIcs}
+                    className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-[var(--color-primary)]/5 text-[var(--color-primary-dark)] hover:bg-[var(--color-primary)]/10 py-2 text-xs font-semibold transition cursor-pointer"
+                  >
+                    Download Universal .ics File
+                  </button>
+                </div>
               </CardBody>
             </Card>
           ) : isTeamEvent ? (

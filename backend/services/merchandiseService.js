@@ -50,14 +50,7 @@ const getMerchandise =
                 match: { isActive: true }
             });
 
-        const today = new Date();
-
-        return merchandise
-            .filter((item) => item.organizer)
-            .filter((item) =>
-                !item.purchaseDeadline ||
-                new Date(item.purchaseDeadline) >= today
-            );
+        return merchandise.filter((item) => item.organizer);
 
     };
 

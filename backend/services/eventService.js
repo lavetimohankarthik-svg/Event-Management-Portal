@@ -91,6 +91,10 @@ const updateEvent = async (eventId, data, organizerId) => {
     if (String(event.organizer) !== String(organizerId))
         throw new Error("Unauthorized");
 
+    if (event.endDate && new Date() > new Date(event.endDate)) {
+        throw new Error("Cannot edit an event after it has ended.");
+    }
+
     // Draft -> everything can be edited
     if (event.status === "draft") {
 
@@ -151,31 +155,27 @@ const updateEvent = async (eventId, data, organizerId) => {
 const Registration = require("../models/Registration");
 
 const getTrendingEvents = async () => {
-
     const registrations = await Registration.find();
-
     const eventCount = {};
-
     registrations.forEach((registration) => {
-
         const eventId = registration.event.toString();
-
         eventCount[eventId] = (eventCount[eventId] || 0) + 1;
-
     });
 
     const sortedEventIds = Object.entries(eventCount)
-
         .sort((a, b) => b[1] - a[1])
-
         .slice(0, 5)
-
         .map(item => item[0]);
 
+    const today = new Date();
+
     const events = await Event.find({
-
-        _id: { $in: sortedEventIds }
-
+        _id: { $in: sortedEventIds },
+        $or: [
+            { endDate: { $exists: false } },
+            { endDate: null },
+            { endDate: { $gte: today } }
+        ]
     }).populate({
         path: "organizer",
         select: "firstName lastName",
@@ -183,7 +183,6 @@ const getTrendingEvents = async () => {
     });
 
     return events.filter((event) => event.organizer);
-
 };
 
 const getRecommendedEvents = async (userId) => {

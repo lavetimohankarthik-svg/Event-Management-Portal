@@ -25,6 +25,7 @@ import OrganizerEventDetail from "@/pages/organizer/EventDetail";
 import OrganizerMerchandise from "@/pages/organizer/Merchandise";
 import OngoingEvents from "@/pages/organizer/OngoingEvents";
 import OrganizerProfile from "@/pages/organizer/Profile";
+import AttendanceDashboard from "@/pages/organizer/AttendanceDashboard";
 
 import AdminLayout from "@/components/layouts/AdminLayout";
 import AdminDashboard from "@/pages/admin/Dashboard";
@@ -79,6 +80,7 @@ function App() {
               <Route path="events/ongoing" element={<OngoingEvents />} />
               <Route path="merchandise" element={<OrganizerMerchandise />} />
               <Route path="profile" element={<OrganizerProfile />} />
+              <Route path="events/:id/attendance" element={<AttendanceDashboard />} />
             </Route>
           </Route>
         </Route>

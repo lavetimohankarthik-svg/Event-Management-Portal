@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Download, Pencil, Search, Users, CheckCircle2 } from "lucide-react";
+import { Download, Pencil, Search, Users, CheckCircle2, QrCode } from "lucide-react";
 import api, { apiMessage } from "@/lib/api";
 import Loader from "@/components/Loader";
 import { Card, CardBody, CardHeader, Badge } from "@/components/ui/Card";
@@ -98,12 +98,21 @@ const OrganizerEventDetail = () => {
           </h1>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to={`/organizer/events/${id}/edit`}>
-            <Button variant="outline">
-              <Pencil className="h-4 w-4" /> Edit
-            </Button>
-          </Link>
-          {event.status === "published" && (
+          {(!event.endDate || new Date() <= new Date(event.endDate)) && (
+            <Link to={`/organizer/events/${id}/edit`}>
+              <Button variant="outline">
+                <Pencil className="h-4 w-4" /> Edit
+              </Button>
+            </Link>
+          )}
+          {event.status !== "draft" && event.startDate && new Date() >= new Date(event.startDate) && (
+            <Link to={`/organizer/events/${id}/attendance`}>
+              <Button variant="outline">
+                <QrCode className="h-4 w-4" /> Attendance Scanner
+              </Button>
+            </Link>
+          )}
+          {event.status === "published" && (!event.endDate || new Date() <= new Date(event.endDate)) && (
             <Button loading={busy} onClick={() => updateStatus("ongoing")}>
               Mark Ongoing
             </Button>

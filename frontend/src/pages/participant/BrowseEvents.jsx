@@ -34,7 +34,7 @@ const BrowseEvents = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    return events.filter((event) => {
+    const list = events.filter((event) => {
       if (
         search &&
         !`${event.eventName} ${event.organizer?.firstName || ""} ${event.organizer?.lastName || ""}`
@@ -50,7 +50,6 @@ const BrowseEvents = () => {
       if (startDate && new Date(event.startDate) < new Date(startDate))
         return false;
 
-
       if (
         followedOnly &&
         !user?.followedOrganizers?.some(
@@ -60,6 +59,52 @@ const BrowseEvents = () => {
         return false;
 
       return true;
+    });
+
+    // Custom sorting: Followed club events (prioritizing open registrations) at the top,
+    // followed by other registration-open events, and completed/closed events at the bottom.
+    return list.sort((a, b) => {
+      const aCompleted = a.status === "completed" || a.status === "closed";
+      const bCompleted = b.status === "completed" || b.status === "closed";
+
+      // 1. Move completed events to the bottom
+      if (aCompleted && !bCompleted) return 1;
+      if (!aCompleted && bCompleted) return -1;
+      if (aCompleted && bCompleted) return 0;
+
+      // Determine followed status
+      const aFollowed = user?.followedOrganizers?.some(
+        (id) => id === a.organizer?._id || id?._id === a.organizer?._id
+      ) || false;
+      const bFollowed = user?.followedOrganizers?.some(
+        (id) => id === b.organizer?._id || id?._id === b.organizer?._id
+      ) || false;
+
+      // Determine if registrations are open (deadline in the future)
+      const now = new Date();
+      const aOpen = a.registrationDeadline ? new Date(a.registrationDeadline) >= now : true;
+      const bOpen = b.registrationDeadline ? new Date(b.registrationDeadline) >= now : true;
+
+      // Group 1: Followed & Open -> Score 4
+      // Group 2: Not Followed & Open -> Score 3
+      // Group 3: Followed & Closed -> Score 2
+      // Group 4: Not Followed & Closed -> Score 1
+      let aScore = 1;
+      if (aFollowed && aOpen) aScore = 4;
+      else if (!aFollowed && aOpen) aScore = 3;
+      else if (aFollowed && !aOpen) aScore = 2;
+
+      let bScore = 1;
+      if (bFollowed && bOpen) bScore = 4;
+      else if (!bFollowed && bOpen) bScore = 3;
+      else if (bFollowed && !bOpen) bScore = 2;
+
+      if (aScore !== bScore) {
+        return bScore - aScore;
+      }
+
+      // 3. Fallback to start date ascending
+      return new Date(a.startDate) - new Date(b.startDate);
     });
   }, [events, search, eventCategory, eligibility, startDate, followedOnly, user]);
 

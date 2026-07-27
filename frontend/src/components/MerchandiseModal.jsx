@@ -10,6 +10,9 @@ const MerchandiseModal = ({ open, onOpenChange, item, onBuy }) => {
 
   if (!item) return null;
 
+  const now = new Date();
+  const isDeadlinePassed = item.purchaseDeadline ? new Date(item.purchaseDeadline) < now : false;
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -33,8 +36,8 @@ const MerchandiseModal = ({ open, onOpenChange, item, onBuy }) => {
               <p className="font-semibold text-lg">{currency(item.price)}</p>
               <p className="text-xs text-[var(--color-muted)]">{item.stock} in stock</p>
               {item.purchaseDeadline && (
-                <p className="text-xs text-[var(--color-muted)]">
-                  Purchase until {formatDate(item.purchaseDeadline)}
+                <p className={`text-xs ${isDeadlinePassed ? "text-red-500 font-medium animate-pulse" : "text-[var(--color-muted)]"}`}>
+                  Purchase until {formatDate(item.purchaseDeadline)} {isDeadlinePassed && "(Passed)"}
                 </p>
               )}
             </div>
@@ -46,12 +49,13 @@ const MerchandiseModal = ({ open, onOpenChange, item, onBuy }) => {
                 value={qty}
                 onChange={(e) => setQty(Number(e.target.value))}
                 className="w-24"
+                disabled={isDeadlinePassed}
               />
               <Button
                 onClick={() => onBuy(item, qty)}
-                disabled={item.stock === 0 || qty < 1}
+                disabled={item.stock === 0 || qty < 1 || isDeadlinePassed}
               >
-                {item.stock === 0 ? "Out of Stock" : "Buy"}
+                {item.stock === 0 ? "Out of Stock" : isDeadlinePassed ? "Deadline Passed" : "Buy"}
               </Button>
             </div>
           </div>

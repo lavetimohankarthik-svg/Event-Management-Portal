@@ -1,14 +1,14 @@
-# 🎉 Felicity — Event Management Portal
+# 🎉 Recstacy — Event Management Portal
 
-> A full-stack web application for end-to-end college event management, built for NIT Durgapur's annual tech-fest. Felicity streamlines every stage of an event lifecycle — from creation and registration to real-time attendance tracking and post-event feedback — across three distinct user roles: **Admin**, **Organizer**, and **Participant**.
+> A full-stack web application for end-to-end college event management, built for NIT Durgapur's annual tech-fest. Recstacy streamlines every stage of an event lifecycle — from creation and registration to real-time attendance tracking and post-event feedback — across three distinct user roles: **Admin**, **Organizer**, and **Participant**.
 
 ---
 
 ## 🌐 Live Demo
 
-> *(Add your deployed URLs here)*
+
 > - **Frontend**: [https://your-frontend.vercel.app](https://event-management-portal-gamma.vercel.app/login)
-> - **Backend API**: [https://your-backend.railway.app](https://event-management-portal-t1oi.onrender.com)
+> - **Backend API**: [https://your-backend.render.app](https://event-management-portal-t1oi.onrender.com)
 
 ---
 
@@ -97,7 +97,7 @@
 ## 🏗️ Project Architecture
 
 ```
-Felicity_full_stack/
+Recstacy_full_stack/
 ├── frontend/               # React + Vite SPA
 │   ├── src/
 │   │   ├── pages/
@@ -143,8 +143,8 @@ You will also need accounts for:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/felicity-event-portal.git
-cd felicity-event-portal
+git clone https://github.com/lavetimohankarthik-svg/Event-Management-Portal.git
+cd Event-Management-Portal
 ```
 
 ---
@@ -182,7 +182,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 # Brevo (Email)
 BREVO_API_KEY=your_brevo_api_key
 BREVO_SENDER_EMAIL=noreply@yourdomain.com
-BREVO_SENDER_NAME=Felicity Notifications
+BREVO_SENDER_NAME=Recstacy Notifications
 
 # Admin Seeder
 ADMIN_EMAIL=admin@nitdgp.ac.in
@@ -287,14 +287,6 @@ Organizer Interface:
 
 
 
-
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you'd like to change.
-
 ---
 
 ## 📄 License
@@ -304,5 +296,5 @@ This project is licensed under the [ISC License](LICENSE).
 ---
 
 <div align="center">
-  <strong>Built with ❤️ for Felicity — NIT Durgapur's Annual Tech-Fest</strong>
+  <strong>Built with ❤️ for Recstacy — NIT Durgapur's Annual Tech-Fest</strong>
 </div>

@@ -26,7 +26,7 @@
 - Browse and search events with filters
 - Event detail pages with registration CTA
 - Organizer dashboard with live event stats (registrations, attendance count)
-- Ongoing events monitor for real-time tracking
+- Ongoing events monitor for real-time tracking.
 
 ### 📋 Registration System
 - Solo and **team-based** event registration

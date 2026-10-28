@@ -85,7 +85,6 @@
 | **Backend** | Node.js, Express.js 5 |
 | **Database** | MongoDB (Mongoose ODM) |
 | **Auth** | JWT + HTTP-only Cookies, Bcrypt |
-| **File Uploads** | Multer + Cloudinary |
 | **Email** | Nodemailer via Brevo SMTP |
 | **QR Codes** | `qrcode`, `qrcode.react`, `html5-qrcode` |
 | **Export** | `json2csv`, `csv-writer`, `ics` |
@@ -115,7 +114,7 @@ Recstacy_full_stack/
     ├── controllers/        # Business logic handlers
     ├── models/             # 13 Mongoose schemas
     ├── middleware/         # Auth, role guards, error handling
-    ├── services/           # Email, Cloudinary, Socket.IO
+    ├── services/           # Email, Socket.IO
     ├── utils/              # Helpers (QR, CSV, ICS generation)
     └── server.js           # Entry point (HTTP + Socket.IO)
 ```
@@ -135,7 +134,6 @@ Make sure you have the following installed:
 | MongoDB | Atlas URI or local instance |
 
 You will also need accounts for:
-- [Cloudinary](https://cloudinary.com/) — image uploads
 - [Brevo](https://www.brevo.com/) — email sending (free tier works)
 
 ---
@@ -174,10 +172,6 @@ INSTITUTE_NAME=NIT DURGAPUR
 INSTITUTE_ELIGIBILITY=NIT_DURGAPUR_ONLY
 INSTITUTE_EMAIL_DOMAIN=@nitdgp.ac.in
 
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 # Brevo (Email)
 BREVO_API_KEY=your_brevo_api_key
